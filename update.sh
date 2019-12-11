@@ -100,8 +100,6 @@ function check_beta_released() {
 	printf '%s\n' "${fullversions_beta[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
-travisEnv=
-
 function create_variant() {
 	dir="$1/$variant"
 	phpVersion=${php_version[$version]-${php_version[default]}}
@@ -154,9 +152,66 @@ function create_variant() {
 	fi
 
 	for arch in i386 amd64; do
-		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
+		# https://github.com/docker-library/php/issues/822
+		if [[ "$arch" == 'i386' && "$variant" == 'apache' ]]; then
+			continue
+		fi
+
+		image="$arch/nextcloud:$1-$variant"
+
+		{
+			echo
+			echo "  $arch-$variant-${version/./-}:"
+			echo "    name: $image"
+			echo "    runs-on: ubuntu-latest"
+			echo "    steps:"
+			echo "      - name: Checkout repo"
+			echo "        uses: actions/checkout@v1"
+			echo "      - name: Checkout docker-library/official-images"
+			echo "        uses: actions/checkout@v1"
+			echo "        with:"
+			echo "          repository: docker-library/official-images"
+			echo "          ref: master"
+			if [[ "$arch" == 'i386' ]]; then
+				echo "      - name: Use i386 base image"
+				echo "        run: sed -i -e 's/FROM php/FROM i386\/php/g' '$dir/Dockerfile'"
+			fi
+			for i in mariadb:10 postgres:11-alpine; do
+				echo "      - name: Pull $i"
+				echo "        run: docker pull '$i'"
+			done
+			echo "      - name: Build the image"
+			echo "        run: docker build -t '$image' '$dir'"
+			echo "      - name: Test the image"
+			echo -n "        run: "
+			for i in {2..5}; do
+				echo -n "../official-images/test/run.sh '$image' || "
+			done
+			echo "../official-images/test/run.sh '$image'"
+			echo "      - name: Tag image"
+			echo "        run: docker tag '$image' 'nextcloud:$variant'"
+			for e in cron full imap smb; do
+				echo "      - name: Build the $e example"
+				echo "        run: docker build -t '$image-$e' '.examples/dockerfiles/$e/$variant'"
+			done
+			echo "      - name: List images"
+			echo "        run: docker images"
+		} >> .github/workflows/images.yml
 	done
 }
+
+{
+	echo '# DO NOT EDIT: created by update.sh'
+	echo 'name: Build and test images'
+	echo
+	echo 'on:'
+	echo '  push:'
+	echo '    branches:'
+	echo '      - master'
+	echo '  pull_request:'
+	echo
+	echo 'jobs:'
+} > .github/workflows/images.yml
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
@@ -236,11 +291,3 @@ for version in "${versions_alpha[@]}"; do
 		fi
 	fi
 done
-
-# remove everything after '- stage: test images'
-travis="$(awk '!p; /- stage: test images/ {p=1}' .travis.yml)"
-echo "$travis" > .travis.yml
-
-# replace the fist '-' with ' '
-travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
-printf "$travisEnv" >> .travis.yml
