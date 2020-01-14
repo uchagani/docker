@@ -1,0 +1,666 @@
+# DO NOT EDIT: created by update.sh
+name: Build and test images
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+
+  amd64-apache-17-0:
+    name: amd64/nextcloud:17.0-apache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:17.0-apache' '17.0/apache'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:17.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-apache'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:17.0-apache' 'nextcloud:apache'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:17.0-apache-cron' '.examples/dockerfiles/cron/apache'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:17.0-apache-full' '.examples/dockerfiles/full/apache'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:17.0-apache-imap' '.examples/dockerfiles/imap/apache'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:17.0-apache-smb' '.examples/dockerfiles/smb/apache'
+      - name: List images
+        run: docker images
+
+  i386-fpm-17-0:
+    name: i386/nextcloud:17.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '17.0/fpm/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:17.0-fpm' '17.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:17.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-17-0:
+    name: amd64/nextcloud:17.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:17.0-fpm' '17.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:17.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  i386-fpm-alpine-17-0:
+    name: i386/nextcloud:17.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '17.0/fpm-alpine/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:17.0-fpm-alpine' '17.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:17.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:17.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:17.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-alpine-17-0:
+    name: amd64/nextcloud:17.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-alpine' '17.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:17.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:17.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:17.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-apache-16-0:
+    name: amd64/nextcloud:16.0-apache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:16.0-apache' '16.0/apache'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:16.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-apache'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:16.0-apache' 'nextcloud:apache'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:16.0-apache-cron' '.examples/dockerfiles/cron/apache'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:16.0-apache-full' '.examples/dockerfiles/full/apache'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:16.0-apache-imap' '.examples/dockerfiles/imap/apache'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:16.0-apache-smb' '.examples/dockerfiles/smb/apache'
+      - name: List images
+        run: docker images
+
+  i386-fpm-16-0:
+    name: i386/nextcloud:16.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '16.0/fpm/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:16.0-fpm' '16.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:16.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-16-0:
+    name: amd64/nextcloud:16.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:16.0-fpm' '16.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:16.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  i386-fpm-alpine-16-0:
+    name: i386/nextcloud:16.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '16.0/fpm-alpine/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:16.0-fpm-alpine' '16.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:16.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:16.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:16.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-alpine-16-0:
+    name: amd64/nextcloud:16.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-alpine' '16.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:16.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:16.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:16.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-apache-15-0:
+    name: amd64/nextcloud:15.0-apache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:15.0-apache' '15.0/apache'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:15.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-apache' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-apache'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:15.0-apache' 'nextcloud:apache'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:15.0-apache-cron' '.examples/dockerfiles/cron/apache'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:15.0-apache-full' '.examples/dockerfiles/full/apache'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:15.0-apache-imap' '.examples/dockerfiles/imap/apache'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:15.0-apache-smb' '.examples/dockerfiles/smb/apache'
+      - name: List images
+        run: docker images
+
+  i386-fpm-15-0:
+    name: i386/nextcloud:15.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '15.0/fpm/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:15.0-fpm' '15.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:15.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-15-0:
+    name: amd64/nextcloud:15.0-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:15.0-fpm' '15.0/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:15.0-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  i386-fpm-alpine-15-0:
+    name: i386/nextcloud:15.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '15.0/fpm-alpine/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:15.0-fpm-alpine' '15.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:15.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:15.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:15.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-alpine-15-0:
+    name: amd64/nextcloud:15.0-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-alpine' '15.0/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:15.0-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:15.0-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:15.0-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-apache-18-0:
+    name: amd64/nextcloud:18.0-rc-apache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:18.0-rc-apache' '18.0-rc/apache'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-apache' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-apache' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-apache' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-apache' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-apache'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:18.0-rc-apache' 'nextcloud:apache'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-apache-cron' '.examples/dockerfiles/cron/apache'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-apache-full' '.examples/dockerfiles/full/apache'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-apache-imap' '.examples/dockerfiles/imap/apache'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-apache-smb' '.examples/dockerfiles/smb/apache'
+      - name: List images
+        run: docker images
+
+  i386-fpm-18-0:
+    name: i386/nextcloud:18.0-rc-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '18.0-rc/fpm/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm' '18.0-rc/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:18.0-rc-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-18-0:
+    name: amd64/nextcloud:18.0-rc-fpm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm' '18.0-rc/fpm'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:18.0-rc-fpm' 'nextcloud:fpm'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-cron' '.examples/dockerfiles/cron/fpm'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-full' '.examples/dockerfiles/full/fpm'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-imap' '.examples/dockerfiles/imap/fpm'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-smb' '.examples/dockerfiles/smb/fpm'
+      - name: List images
+        run: docker images
+
+  i386-fpm-alpine-18-0:
+    name: i386/nextcloud:18.0-rc-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Use i386 base image
+        run: sed -i -e 's/FROM php/FROM i386\/php/g' '18.0-rc/fpm-alpine/Dockerfile'
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-alpine' '18.0-rc/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'i386/nextcloud:18.0-rc-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'i386/nextcloud:18.0-rc-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'i386/nextcloud:18.0-rc-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
+
+  amd64-fpm-alpine-18-0:
+    name: amd64/nextcloud:18.0-rc-fpm-alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Checkout docker-library/official-images
+        uses: actions/checkout@v1
+        with:
+          repository: docker-library/official-images
+          ref: master
+      - name: Pull mariadb:10
+        run: docker pull 'mariadb:10'
+      - name: Pull postgres:11-alpine
+        run: docker pull 'postgres:11-alpine'
+      - name: Build the image
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-alpine' '18.0-rc/fpm-alpine'
+      - name: Test the image
+        run: ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm-alpine' || ../official-images/test/run.sh 'amd64/nextcloud:18.0-rc-fpm-alpine'
+      - name: Tag image
+        run: docker tag 'amd64/nextcloud:18.0-rc-fpm-alpine' 'nextcloud:fpm-alpine'
+      - name: Build the cron example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-alpine-cron' '.examples/dockerfiles/cron/fpm-alpine'
+      - name: Build the full example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-alpine-full' '.examples/dockerfiles/full/fpm-alpine'
+      - name: Build the imap example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-alpine-imap' '.examples/dockerfiles/imap/fpm-alpine'
+      - name: Build the smb example
+        run: docker build -t 'amd64/nextcloud:18.0-rc-fpm-alpine-smb' '.examples/dockerfiles/smb/fpm-alpine'
+      - name: List images
+        run: docker images
