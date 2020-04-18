@@ -8,7 +8,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=SuperSecretRootPassword
     env_file:
       - db.env
 
@@ -18,12 +18,15 @@ services:
 
   app:
     image: nextcloud:fpm-alpine
+    container_name: nextcloud
     restart: always
     volumes:
       - nextcloud:/var/www/html
+      - /mnt/storage/nextcloud:/opt/nextcloud/data
     environment:
       - MYSQL_HOST=db
       - REDIS_HOST=redis
+      - NEXTCLOUD_DATA_DIR=/opt/nextcloud/data
     env_file:
       - db.env
     depends_on:
@@ -34,7 +37,7 @@ services:
     build: ./web
     restart: always
     ports:
-      - 8080:80
+      - 10800:80
     volumes:
       - nextcloud:/var/www/html:ro
     depends_on:
